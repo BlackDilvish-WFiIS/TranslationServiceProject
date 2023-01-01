@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 
 @RestController
 @RequestMapping("/v1")
@@ -19,6 +21,12 @@ public class LanguageApiController implements LanguageApi {
     public ResponseEntity<LanguageDto> getLanguage(Long languageId) {
         LanguageDto languageDto = languageService.getLanguage(languageId);
         return ResponseEntity.ok(languageDto);
+    }
+
+    @Override
+    public ResponseEntity<List<LanguageDto>> getLanguages() {
+        List<LanguageDto> languageDtos = languageService.getLanguages();
+        return ResponseEntity.ok(languageDtos);
     }
 
     @Override

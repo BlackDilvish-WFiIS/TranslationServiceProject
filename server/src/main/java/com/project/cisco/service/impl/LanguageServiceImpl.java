@@ -9,7 +9,9 @@ import com.project.cisco.service.LanguageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class LanguageServiceImpl implements LanguageService {
@@ -32,6 +34,12 @@ public class LanguageServiceImpl implements LanguageService {
             throw new NotFoundException("Language with given id does not exist");
         }
         return languageMapper.map(languageOptional.get());
+    }
+
+    @Override
+    public List<LanguageDto> getLanguages() {
+        List<Language> languages = languageRepository.findAll();
+        return languages.stream().map(language -> languageMapper.map(language)).toList();
     }
 
     @Override
