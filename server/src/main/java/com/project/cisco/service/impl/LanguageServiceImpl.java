@@ -4,14 +4,15 @@ import com.project.cisco.database.entity.Language;
 import com.project.cisco.database.repository.LanguageRepository;
 import com.project.cisco.dto.LanguageDto;
 import com.project.cisco.exception.NotFoundException;
+import com.project.cisco.exception.UniqueConstraintViolationException;
 import com.project.cisco.mapper.LanguageMapper;
 import com.project.cisco.service.LanguageService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class LanguageServiceImpl implements LanguageService {
@@ -23,8 +24,12 @@ public class LanguageServiceImpl implements LanguageService {
     @Override
     public LanguageDto addLanguage(LanguageDto languageDto) {
         Language language = languageMapper.map(languageDto);
-        Language savedLanguage = languageRepository.save(language);
-        return languageMapper.map(savedLanguage);
+        try {
+            Language savedLanguage = languageRepository.save(language);
+            return languageMapper.map(savedLanguage);
+        } catch (DataIntegrityViolationException e) {
+            throw new UniqueConstraintViolationException("Language with given language name already exists.");
+        }
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.project.cisco.exception.handler;
 
 import com.project.cisco.exception.GeneralException;
 import com.project.cisco.exception.NotFoundException;
+import com.project.cisco.exception.UniqueConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -15,6 +16,12 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<ErrorDto> handleNotFoundException(NotFoundException ex) {
         return new ResponseEntity<>(buildErrorMessage(ex), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler({UniqueConstraintViolationException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ErrorDto> handleUniqueConstraintViolationException(UniqueConstraintViolationException ex) {
+        return new ResponseEntity<>(buildErrorMessage(ex), HttpStatus.BAD_REQUEST);
     }
 
     private ErrorDto buildErrorMessage(GeneralException ex){
