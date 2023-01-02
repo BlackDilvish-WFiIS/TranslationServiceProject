@@ -1,7 +1,6 @@
 package com.project.cisco.service;
 
 import com.project.cisco.dto.LanguageDto;
-
 import java.util.List;
 
 public interface LanguageService {
