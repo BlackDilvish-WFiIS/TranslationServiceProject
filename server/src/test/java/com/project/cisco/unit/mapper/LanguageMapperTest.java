@@ -1,5 +1,6 @@
 package com.project.cisco.unit.mapper;
 
+import com.project.cisco.CiscoApplication;
 import com.project.cisco.database.entity.Language;
 import com.project.cisco.dto.LanguageDto;
 import com.project.cisco.mapper.LanguageMapper;
@@ -14,7 +15,7 @@ import org.springframework.util.Assert;
 
 import java.util.List;
 
-@SpringBootTest
+@SpringBootTest(classes = CiscoApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class LanguageMapperTest {
     @Autowired
     private LanguageMapper languageMapper;

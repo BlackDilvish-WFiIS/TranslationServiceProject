@@ -1,5 +1,6 @@
 package com.project.cisco.unit.service;
 
+import com.project.cisco.CiscoApplication;
 import com.project.cisco.database.entity.Language;
 import com.project.cisco.database.repository.LanguageRepository;
 import com.project.cisco.dto.LanguageDto;
@@ -14,7 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Optional;
 
-@SpringBootTest
+@SpringBootTest(classes = CiscoApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class LanguageServiceTest {
     @InjectMocks
     private LanguageServiceImpl languageService;
