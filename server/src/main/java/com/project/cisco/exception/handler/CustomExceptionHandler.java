@@ -4,6 +4,7 @@ import com.project.cisco.exception.GeneralException;
 import com.project.cisco.exception.NotAllowedLanguageException;
 import com.project.cisco.exception.NotFoundException;
 import com.project.cisco.exception.UniqueConstraintViolationException;
+import com.project.cisco.exception.LengthConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -22,6 +23,12 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler({UniqueConstraintViolationException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ErrorDto> handleUniqueConstraintViolationException(UniqueConstraintViolationException ex) {
+        return new ResponseEntity<>(buildErrorMessage(ex), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({LengthConstraintViolationException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ErrorDto> handleLengthConstraintViolationException(LengthConstraintViolationException ex) {
         return new ResponseEntity<>(buildErrorMessage(ex), HttpStatus.BAD_REQUEST);
     }
 

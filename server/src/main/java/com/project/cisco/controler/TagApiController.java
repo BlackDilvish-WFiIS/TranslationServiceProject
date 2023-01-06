@@ -5,12 +5,15 @@ import com.project.cisco.dto.TagDto;
 import com.project.cisco.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-
+@CrossOrigin(value = { "http://localhost:3000/" },
+        maxAge = 900
+)
 @RestController
 @RequestMapping("/v1")
 public class TagApiController implements TagApi {

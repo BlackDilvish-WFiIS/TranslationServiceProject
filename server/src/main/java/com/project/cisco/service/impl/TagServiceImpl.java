@@ -5,11 +5,14 @@ import com.project.cisco.database.repository.TagRepository;
 import com.project.cisco.dto.TagDto;
 import com.project.cisco.exception.NotFoundException;
 import com.project.cisco.exception.UniqueConstraintViolationException;
+import com.project.cisco.exception.LengthConstraintViolationException;
 import com.project.cisco.mapper.TagMapper;
 import com.project.cisco.service.TagService;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionSystemException;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,7 +31,9 @@ public class TagServiceImpl implements TagService {
             Tag savedTag = tagRepository.save(tag);
             return tagMapper.map(savedTag);
         } catch (DataIntegrityViolationException e) {
-            throw new UniqueConstraintViolationException("Tag with given tag name already exists.");
+            throw new UniqueConstraintViolationException("Tag with given tag name already exists!");
+        } catch(TransactionSystemException e) {
+            throw new LengthConstraintViolationException("Tag name must be between 2 and 32 characters long.");
         }
     }
 
@@ -36,7 +41,7 @@ public class TagServiceImpl implements TagService {
     public TagDto getTag(Long id) {
         Optional<Tag> tagOptional = tagRepository.findById(id);
         if (tagOptional.isEmpty()) {
-            throw new NotFoundException("Tag with given id does not exist");
+            throw new NotFoundException("Tag with given id does not exist!");
         }
         return tagMapper.map(tagOptional.get());
     }
@@ -51,7 +56,7 @@ public class TagServiceImpl implements TagService {
     public void deleteTag(Long id) {
         Optional<Tag> tagOptional = tagRepository.findById(id);
         if (tagOptional.isEmpty()) {
-            throw new NotFoundException("Tag with given id does not exist");
+            throw new NotFoundException("Tag with given id does not exist!");
         }
         tagRepository.deleteById(id);
     }
@@ -60,7 +65,7 @@ public class TagServiceImpl implements TagService {
     public TagDto modifyTag(TagDto tagDto) {
         Optional<Tag> tagOptional = tagRepository.findById(tagDto.getId());
         if (tagOptional.isEmpty()) {
-            throw new NotFoundException("Tag with given id does not exist");
+            throw new NotFoundException("Tag with given id does not exist!");
         }
         Tag tag = tagOptional.get();
         tag.setTag(tagDto.getTag());
