@@ -6,6 +6,8 @@
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^14.4.3",
+    "ant-table-extensions": "^1.1.7",
+    "antd": "^5.1.2",
     "axios": "^1.2.1",
     "npm": "^9.2.0",
     "npm-force-resolutions": "^0.0.10",
