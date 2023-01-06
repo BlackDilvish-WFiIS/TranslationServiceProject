@@ -27,6 +27,12 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(buildErrorMessage(ex), HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler({LengthConstraintViolationException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ErrorDto> handleLengthConstraintViolationException(LengthConstraintViolationException ex) {
+        return new ResponseEntity<>(buildErrorMessage(ex), HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler({NotAllowedLanguageException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ErrorDto> handleNotAllowedLanguageException(NotAllowedLanguageException ex) {
