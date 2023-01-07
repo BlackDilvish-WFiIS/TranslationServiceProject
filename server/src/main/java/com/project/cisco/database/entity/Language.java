@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.FieldNameConstants;
 
+import java.util.List;
+
 @Data
 @ToString(callSuper = true)
 @FieldNameConstants
@@ -26,4 +28,17 @@ public class Language {
     @NotBlank
     @Size(min = 2, max = 32, message = "Language name must be between 2 and 32 characters long")
     private String language;
+
+    @OneToMany
+    @JoinColumn(name="message_id")
+    private List<Message> message;
+
+    public Language(String language) {
+        this.language = language;
+    }
+
+    public Language(Long id, String language) {
+        this.id = id;
+        this.language = language;
+    }
 }

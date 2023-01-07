@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.FieldNameConstants;
 
+import java.util.List;
 
 @Data
 @ToString(callSuper = true)
@@ -27,4 +28,16 @@ public class Tag {
     @NotBlank
     @Size(min = 2, max = 32, message = "Tag must be between 2 and 32 characters long")
     private String tag;
+
+    @ManyToMany(mappedBy = "tags")
+    private List<Message> messages;
+
+    public Tag(String tag) {
+        this.tag = tag;
+    }
+
+    public Tag(Long id, String tag) {
+        this.id = id;
+        this.tag = tag;
+    }
 }
