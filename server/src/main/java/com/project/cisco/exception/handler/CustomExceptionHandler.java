@@ -38,12 +38,6 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(buildErrorMessage(ex), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler({NotAllowedLanguageException.class})
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<ErrorDto> handleNotAllowedLanguageException(NotAllowedLanguageException ex) {
-        return new ResponseEntity<>(buildErrorMessage(ex), HttpStatus.BAD_REQUEST);
-    }
-
     private ErrorDto buildErrorMessage(GeneralException ex){
         return ErrorDto.builder().errorCode(ex.getErrorCode()).message(ex.getMessage()).build();
     }
