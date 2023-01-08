@@ -36,9 +36,16 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler({InvalidTagsException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<ErrorDto> invalidTagsException(InvalidTagsException ex) {
+    public ResponseEntity<ErrorDto> handleInvalidTagsException(InvalidTagsException ex) {
         return new ResponseEntity<>(buildErrorMessage(ex), HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler({NotAllowedOriginalMessageException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ErrorDto> handleNotAllowedOriginalMessageException(NotAllowedOriginalMessageException ex) {
+        return new ResponseEntity<>(buildErrorMessage(ex), HttpStatus.BAD_REQUEST);
+    }
+
 
     private ErrorDto buildErrorMessage(GeneralException ex){
         return ErrorDto.builder().errorCode(ex.getErrorCode()).message(ex.getMessage()).build();

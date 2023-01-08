@@ -96,6 +96,9 @@ public class MessageServiceImpl implements MessageService {
         if (messageOptional.isEmpty()) {
             throw new NotFoundException("Message with given id does not exist");
         }
+        if(messageOptional.get().getOriginal_message() == null && messageDto.getOriginal_message() != null){
+            throw new InvalidTagsException("It is not allowed to change original message");
+        }
         if (messageDto.getOriginal_message() == null && !Objects.equals(messageDto.getLanguage(), "English")) {
             throw new NotAllowedLanguageException("Original message can be only in english");
         }
