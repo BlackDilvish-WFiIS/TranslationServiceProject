@@ -3,6 +3,7 @@ package com.project.cisco.service.impl;
 import com.project.cisco.database.entity.Language;
 import com.project.cisco.database.repository.LanguageRepository;
 import com.project.cisco.dto.LanguageDto;
+import com.project.cisco.exception.LengthConstraintViolationException;
 import com.project.cisco.exception.NotFoundException;
 import com.project.cisco.exception.UniqueConstraintViolationException;
 import com.project.cisco.mapper.LanguageMapper;
@@ -10,6 +11,7 @@ import com.project.cisco.service.LanguageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionSystemException;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,6 +31,8 @@ public class LanguageServiceImpl implements LanguageService {
             return languageMapper.map(savedLanguage);
         } catch (DataIntegrityViolationException e) {
             throw new UniqueConstraintViolationException("Language with given language name already exists.");
+        } catch (TransactionSystemException e) {
+            throw new LengthConstraintViolationException("Language name must be between 2 and 32 characters long.");
         }
     }
 
