@@ -7,6 +7,7 @@ import com.project.cisco.database.repository.LanguageRepository;
 import com.project.cisco.database.repository.MessageRepository;
 import com.project.cisco.database.repository.TagRepository;
 import com.project.cisco.dto.MessageDto;
+import com.project.cisco.exception.InvalidTagsException;
 import com.project.cisco.exception.NotAllowedLanguageException;
 import com.project.cisco.exception.NotFoundException;
 import com.project.cisco.exception.UniqueConstraintViolationException;
@@ -37,6 +38,13 @@ public class MessageServiceImpl implements MessageService {
         try {
             if (messageDto.getOriginal_message() == null && !Objects.equals(messageDto.getLanguage(), "English")) {
                 throw new NotAllowedLanguageException("Original message can be only in english");
+            }
+            if(messageDto.getOriginal_message() != null && !messageDto.getTags().isEmpty()){
+                Optional<Message> original_message = messageRepository.findById(messageDto.getOriginal_message());
+                MessageDto original_messageDto = messageMapper.map(original_message.get());
+                if(original_messageDto.getTags().size() != messageDto.getTags().size() || !original_messageDto.getTags().containsAll(messageDto.getTags()) || !messageDto.getTags().containsAll(original_messageDto.getTags())){
+                    throw new InvalidTagsException("Message has to have same tags as original message");
+                }
             }
             if (languageRepository.findByLanguage(messageDto.getLanguage()) == null) {
                 Language language = new Language(messageDto.getLanguage());
@@ -79,9 +87,6 @@ public class MessageServiceImpl implements MessageService {
         if (messageOptional.isEmpty()) {
             throw new NotFoundException("Message with given id does not exist");
         }
-//        for (Tag tag : messageOptional.get().getTags()) {
-//            tag.getMessages().remove(messageOptional.get());
-//        }
         messageRepository.deleteById(id);
     }
 
@@ -90,6 +95,28 @@ public class MessageServiceImpl implements MessageService {
         Optional<Message> messageOptional = messageRepository.findById(messageDto.getId());
         if (messageOptional.isEmpty()) {
             throw new NotFoundException("Message with given id does not exist");
+        }
+        if (messageDto.getOriginal_message() == null && !Objects.equals(messageDto.getLanguage(), "English")) {
+            throw new NotAllowedLanguageException("Original message can be only in english");
+        }
+        if(messageDto.getOriginal_message() != null && !messageDto.getTags().isEmpty()){
+            Optional<Message> original_message = messageRepository.findById(messageDto.getOriginal_message());
+            MessageDto original_messageDto = messageMapper.map(original_message.get());
+            if(original_messageDto.getTags().size() != messageDto.getTags().size() || !original_messageDto.getTags().containsAll(messageDto.getTags()) || !messageDto.getTags().containsAll(original_messageDto.getTags())){
+                throw new InvalidTagsException("Message has to have same tags as original message");
+            }
+        }
+        if (languageRepository.findByLanguage(messageDto.getLanguage()) == null) {
+            Language language = new Language(messageDto.getLanguage());
+            Language savedLanguage = languageRepository.save(language);
+        }
+        if(messageDto.getTags() != null) {
+            for (Optional<String> tagName : messageDto.getTags()) {
+                if (tagRepository.findByTag(tagName.get()) == null) {
+                    Tag tag = new Tag(tagName.get());
+                    Tag savedTag = tagRepository.save(tag);
+                }
+            }
         }
         Message message = messageOptional.get();
         Message tempMessage = messageMapper.map(messageDto);
