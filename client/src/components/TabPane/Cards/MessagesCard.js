@@ -22,6 +22,7 @@ const MessagesCard = () => {
 
   const [langData, setLangData] = useState();
   const [originalMessData, setoriginalMessData] = useState();
+  const [tagData, setTagData] = useState();
 
   const success = (message) => {
     messageApi.open({
@@ -53,6 +54,7 @@ const MessagesCard = () => {
   const fetchData = () => {
     setLoading(true);
     fetchLanguages();
+    fetchTags();
     fetch(`${baseURL}/message`)
       .then((response) => response.json())
       .then((data) => {
@@ -109,6 +111,14 @@ const MessagesCard = () => {
   };
 
   const columns = [
+    {
+      title: "Message id",
+      dataIndex: "id",
+      sorter: {
+        compare: (a, b) => a.id.localeCompare(b.id),
+      },
+      editable: true,
+    },
     {
       title: "Message content",
       dataIndex: "content",
@@ -187,7 +197,7 @@ const MessagesCard = () => {
 
   const saveEdited = () => {
     fetch(`${baseURL}/message`, {
-      method: "POST",
+      method: "PUT",
       headers: {
         Accept: "application/json, text/plain",
         "Content-Type": "application/json;charset=UTF-8",
@@ -247,10 +257,14 @@ const MessagesCard = () => {
           data[i]['label'] = data[i]['language'];
           data[i]['value'] = data[i]['language'];
         }
-        setLangData(data)
+        if (data.length === 0)
+        {
+          data.push({'label': 'English', 'value': 'English'});
+        }
+        setLangData(data);
       })
       .catch((error) => {
-        console.error("Error while fetching data: ", error);
+        console.error("Error while fetching langs: ", error);
       });
   };
 
@@ -267,10 +281,24 @@ const MessagesCard = () => {
     setoriginalMessData(originals);
   }
 
+  const fetchTags = () => {
+    fetch(`${baseURL}/tag`)
+      .then((response) => response.json())
+      .then((data) => {
+        for (let i = 0; i < data.length; i++) {
+          data[i]['label'] = data[i]['tag'];
+          data[i]['value'] = data[i]['tag'];
+        }
+        setTagData(data);
+      })
+      .catch((error) => {
+        console.error("Error while fetching tags: ", error);
+      });
+  }
+
   return (
     <>
       {resultMessageHolder}
-      <p>test messages</p>
       <Row justify="end">
         <Button
           onClick={onAdd}
@@ -310,11 +338,55 @@ const MessagesCard = () => {
         }}
         onOk={saveEdited}
       >
+        <Select
+          style={{
+            width: '100%',
+          }}
+          value={editingMessage?.language}
+          placeholder="Please add language"
+          onChange={(e) => {
+            setEditingMessage((pre) => {
+              return { ...pre, language: e };
+            });
+          }}
+          options={langData}
+        />
+        <br/>
+        <Select
+          style={{
+            width: '100%',
+          }}
+          value={editingMessage?.original_message}
+          placeholder="Please add original message"
+          onChange={(e) => {
+            setEditingMessage((pre) => {
+              return { ...pre, original_message: e };
+            });
+          }}
+          options={originalMessData}
+        />
+        <br/>
+        <Select
+          mode="multiple"
+          allowClear
+          style={{
+            width: '100%',
+          }}
+          value={editingMessage?.tags}
+          placeholder="Please select tags"
+          onChange={(e) => {
+            setEditingMessage((pre) => {
+              console.log(e);
+              return { ...pre, tags: e };
+            });
+          }}
+          options={tagData}
+        />
         <Input
-          value={addingMessage?.content}
+          value={editingMessage?.content}
           placeholder="Message content"
           onChange={(e) => {
-            setAddingMessage((pre) => {
+            setEditingMessage((pre) => {
               return { ...pre, content: e.target.value };
             });
           }}
@@ -331,7 +403,11 @@ const MessagesCard = () => {
         onOk={saveNewMessage}
       >
         <Select
-          defaultValue="English"
+          style={{
+            width: '100%',
+          }}
+          value={addingMessage?.language}
+          placeholder="Please add language"
           onChange={(e) => {
             setAddingMessage((pre) => {
               return { ...pre, language: e };
@@ -341,13 +417,33 @@ const MessagesCard = () => {
         />
         <br/>
         <Select
-          defaultValue="None"
+          style={{
+            width: '100%',
+          }}
+          value={addingMessage?.original_message}
+          placeholder="Please add original message"
           onChange={(e) => {
             setAddingMessage((pre) => {
               return { ...pre, original_message: e };
             });
           }}
           options={originalMessData}
+        />
+        <br/>
+        <Select
+          mode="multiple"
+          allowClear
+          style={{
+            width: '100%',
+          }}
+          value={addingMessage?.tags}
+          placeholder="Please select tags"
+          onChange={(e) => {
+            setAddingMessage((pre) => {
+              return { ...pre, tags: e };
+            });
+          }}
+          options={tagData}
         />
         <Input
           value={addingMessage?.content}
