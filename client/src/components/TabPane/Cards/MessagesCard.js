@@ -58,6 +58,17 @@ const MessagesCard = () => {
     fetch(`${baseURL}/message`)
       .then((response) => response.json())
       .then((data) => {
+        for (let i = 0; i < data.length; i++) {
+          const orig = data.find(e => e.id === data[i].original_message);
+          if (orig)
+          {
+            data[i]['original_message_text'] = orig.content;
+          }
+          else
+          {
+            data[i]['original_message_text'] = "";
+          }
+        }
         setData(data);
         getOriginalMessages(data);
         setLoading(false);
@@ -112,14 +123,6 @@ const MessagesCard = () => {
 
   const columns = [
     {
-      title: "Message id",
-      dataIndex: "id",
-      sorter: {
-        compare: (a, b) => a.id.localeCompare(b.id),
-      },
-      editable: true,
-    },
-    {
       title: "Message content",
       dataIndex: "content",
       sorter: {
@@ -137,18 +140,15 @@ const MessagesCard = () => {
     },
     {
       title: "Original message",
-      dataIndex: "original_message",
+      dataIndex: "original_message_text",
       sorter: {
-        compare: (a, b) => a.original_message.localeCompare(b.original_message),
+        compare: (a, b) => a.original_message_text.localeCompare(b.original_message_text),
       },
       editable: true,
     },
     {
       title: "Tags",
       dataIndex: "tags",
-      sorter: {
-        compare: (a, b) => a.tags.localeCompare(b.tags),
-      },
       editable: true,
     },
     {
@@ -209,7 +209,7 @@ const MessagesCard = () => {
         return response.json();
       })
       .then((res) => {
-        if (res.ok) {
+        if (res.id) {
           success("Message edited successfully!");
           resetEditing();
         } else {
@@ -236,7 +236,7 @@ const MessagesCard = () => {
         return response.json();
       })
       .then((res) => {
-        if (res.ok) {
+        if (res.id) {
           success("New message added successfully!");
           resetAdding();
         } else {
