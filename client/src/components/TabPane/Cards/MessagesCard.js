@@ -4,6 +4,8 @@ import { Button, Row, Modal, Input, message, Select  } from "antd";
 import { Table } from "ant-table-extensions";
 import { baseURL } from "../../../config";
 
+const { TextArea } = Input;
+
 const MessagesCard = () => {
   const [data, setData] = useState();
   const [messageApi, resultMessageHolder] = message.useMessage();
@@ -58,17 +60,22 @@ const MessagesCard = () => {
     fetch(`${baseURL}/message`)
       .then((response) => response.json())
       .then((data) => {
-        for (let i = 0; i < data.length; i++) {
-          const orig = data.find(e => e.id === data[i].original_message);
+        data.forEach((d) => {
+          const orig = data.find(e => e.id === d.original_message);
           if (orig)
           {
-            data[i]['original_message_text'] = orig.content;
+            d['original_message_text'] = orig.content;
           }
           else
           {
-            data[i]['original_message_text'] = "";
+            d['original_message_text'] = "";
           }
-        }
+          let tags_str = '';
+          d.tags.forEach((t) => {
+            tags_str += '[' + t + '] ';
+          });
+          d['tags_text'] = tags_str;
+        });
         setData(data);
         getOriginalMessages(data);
         setLoading(false);
@@ -84,8 +91,15 @@ const MessagesCard = () => {
   };
 
   const handleDelete = (record) => {
+    let tit;
+    if (record.original_message == null) {
+      tit = "Are you sure, you want to delete this message? All messages related to this original message will be deleted"
+    }
+    else {
+      tit = "Are you sure, you want to delete this message?"
+    }
     Modal.confirm({
-      title: "Are you sure, you want to delete this message?",
+      title: tit,
       okText: "Yes",
       okType: "danger",
       onOk: () => {
@@ -148,7 +162,7 @@ const MessagesCard = () => {
     },
     {
       title: "Tags",
-      dataIndex: "tags",
+      dataIndex: "tags_text",
       editable: true,
     },
     {
@@ -253,14 +267,10 @@ const MessagesCard = () => {
     fetch(`${baseURL}/language`)
       .then((response) => response.json())
       .then((data) => {
-        for (let i = 0; i < data.length; i++) {
-          data[i]['label'] = data[i]['language'];
-          data[i]['value'] = data[i]['language'];
-        }
-        if (data.length === 0)
-        {
-          data.push({'label': 'English', 'value': 'English'});
-        }
+        data.forEach((d) => {
+          d['label'] = d['language'];
+          d['value'] = d['language'];
+        });
         setLangData(data);
       })
       .catch((error) => {
@@ -270,13 +280,13 @@ const MessagesCard = () => {
 
   const getOriginalMessages = (data) => {
     let originals = []
-    for (let i = 0; i < data.length; i++) {
-      if (data[i]['original_message'] == null)
+    data.forEach((d) => {
+      if (d['original_message'] == null)
       {
-        let newData = { 'label': data[i]['content'], 'value': data[i]['id']};
+        let newData = { 'label': d['content'], 'value': d['id']};
         originals.push(newData);
       }
-    }
+    });
     originals.push({ 'label': 'None', 'value': null});
     setoriginalMessData(originals);
   }
@@ -285,10 +295,10 @@ const MessagesCard = () => {
     fetch(`${baseURL}/tag`)
       .then((response) => response.json())
       .then((data) => {
-        for (let i = 0; i < data.length; i++) {
-          data[i]['label'] = data[i]['tag'];
-          data[i]['value'] = data[i]['tag'];
-        }
+        data.forEach((d) => {
+          d['label'] = d['tag'];
+          d['value'] = d['tag'];
+        });
         setTagData(data);
       })
       .catch((error) => {
@@ -338,6 +348,7 @@ const MessagesCard = () => {
         }}
         onOk={saveEdited}
       >
+        
         <Select
           style={{
             width: '100%',
@@ -352,6 +363,7 @@ const MessagesCard = () => {
           options={langData}
         />
         <br/>
+
         <Select
           style={{
             width: '100%',
@@ -366,6 +378,7 @@ const MessagesCard = () => {
           options={originalMessData}
         />
         <br/>
+
         <Select
           mode="multiple"
           allowClear
@@ -382,7 +395,8 @@ const MessagesCard = () => {
           }}
           options={tagData}
         />
-        <Input
+
+        <TextArea
           value={editingMessage?.content}
           placeholder="Message content"
           onChange={(e) => {
@@ -390,7 +404,9 @@ const MessagesCard = () => {
               return { ...pre, content: e.target.value };
             });
           }}
-        ></Input>
+          showCount
+          style={{ height: 120, resize: 'none' }}
+        ></TextArea>
       </Modal>
 
       <Modal
@@ -402,6 +418,7 @@ const MessagesCard = () => {
         }}
         onOk={saveNewMessage}
       >
+
         <Select
           style={{
             width: '100%',
@@ -416,6 +433,7 @@ const MessagesCard = () => {
           options={langData}
         />
         <br/>
+
         <Select
           style={{
             width: '100%',
@@ -430,6 +448,7 @@ const MessagesCard = () => {
           options={originalMessData}
         />
         <br/>
+
         <Select
           mode="multiple"
           allowClear
@@ -445,7 +464,8 @@ const MessagesCard = () => {
           }}
           options={tagData}
         />
-        <Input
+
+        <TextArea
           value={addingMessage?.content}
           placeholder="Message content"
           onChange={(e) => {
@@ -453,7 +473,9 @@ const MessagesCard = () => {
               return { ...pre, content: e.target.value };
             });
           }}
-        ></Input>
+          showCount
+          style={{ height: 120, resize: 'none' }}
+        ></TextArea>
       </Modal>
     </>
   );
