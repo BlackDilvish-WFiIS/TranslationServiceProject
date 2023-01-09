@@ -2,6 +2,7 @@ package com.project.cisco.service.impl;
 
 import com.project.cisco.database.entity.Language;
 import com.project.cisco.database.repository.LanguageRepository;
+import com.project.cisco.database.repository.MessageRepository;
 import com.project.cisco.dto.LanguageDto;
 import com.project.cisco.exception.NotFoundException;
 import com.project.cisco.exception.UniqueConstraintViolationException;
@@ -18,6 +19,8 @@ import java.util.Optional;
 public class LanguageServiceImpl implements LanguageService {
     @Autowired
     private LanguageRepository languageRepository;
+    @Autowired
+    private MessageRepository messageRepository;
     @Autowired
     private LanguageMapper languageMapper;
 
@@ -53,6 +56,11 @@ public class LanguageServiceImpl implements LanguageService {
         if (languageOptional.isEmpty()) {
             throw new NotFoundException("Language with given id does not exist");
         }
+        messageRepository.findAll().forEach(message -> {
+            if (message.getLanguage().getLanguage().equals(languageOptional.get().getLanguage())) {
+                messageRepository.deleteById(message.getId());
+            }
+        });
         languageRepository.deleteById(id);
     }
 

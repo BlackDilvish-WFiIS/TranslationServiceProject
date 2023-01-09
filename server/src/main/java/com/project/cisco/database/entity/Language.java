@@ -31,7 +31,7 @@ public class Language {
 
     @OneToMany
     @JoinColumn(name="message_id")
-    private List<Message> message;
+    private List<Message> messages;
 
     public Language(String language) {
         this.language = language;

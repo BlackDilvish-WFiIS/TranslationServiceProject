@@ -39,18 +39,22 @@ public class MessageServiceImpl implements MessageService {
             if (messageDto.getOriginal_message() == null && !Objects.equals(messageDto.getLanguage(), "English")) {
                 throw new NotAllowedLanguageException("Original message can be only in english");
             }
-            if(messageDto.getOriginal_message() != null && !messageDto.getTags().isEmpty()){
-                Optional<Message> original_message = messageRepository.findById(messageDto.getOriginal_message());
-                MessageDto original_messageDto = messageMapper.map(original_message.get());
-                if(original_messageDto.getTags().size() != messageDto.getTags().size() || !original_messageDto.getTags().containsAll(messageDto.getTags()) || !messageDto.getTags().containsAll(original_messageDto.getTags())){
+            if (messageDto.getOriginal_message() != null) {
+                if (messageDto.getTags() == null || messageDto.getTags().isEmpty()) {
                     throw new InvalidTagsException("Message has to have same tags as original message");
+                } else if (!messageDto.getTags().isEmpty()) {
+                    Optional<Message> original_message = messageRepository.findById(messageDto.getOriginal_message());
+                    MessageDto original_messageDto = messageMapper.map(original_message.get());
+                    if (original_messageDto.getTags().size() != messageDto.getTags().size() || !original_messageDto.getTags().containsAll(messageDto.getTags()) || !messageDto.getTags().containsAll(original_messageDto.getTags())) {
+                        throw new InvalidTagsException("Message has to have same tags as original message");
+                    }
                 }
             }
             if (languageRepository.findByLanguage(messageDto.getLanguage()) == null) {
                 Language language = new Language(messageDto.getLanguage());
                 Language savedLanguage = languageRepository.save(language);
             }
-            if(messageDto.getTags() != null) {
+            if (messageDto.getTags() != null) {
                 for (Optional<String> tagName : messageDto.getTags()) {
                     if (tagRepository.findByTag(tagName.get()) == null) {
                         Tag tag = new Tag(tagName.get());
@@ -96,24 +100,28 @@ public class MessageServiceImpl implements MessageService {
         if (messageOptional.isEmpty()) {
             throw new NotFoundException("Message with given id does not exist");
         }
-        if(messageOptional.get().getOriginal_message() == null && messageDto.getOriginal_message() != null){
+        if (messageOptional.get().getOriginal_message() == null && messageDto.getOriginal_message() != null) {
             throw new InvalidTagsException("It is not allowed to change original message");
         }
         if (messageDto.getOriginal_message() == null && !Objects.equals(messageDto.getLanguage(), "English")) {
             throw new NotAllowedLanguageException("Original message can be only in english");
         }
-        if(messageDto.getOriginal_message() != null && !messageDto.getTags().isEmpty()){
-            Optional<Message> original_message = messageRepository.findById(messageDto.getOriginal_message());
-            MessageDto original_messageDto = messageMapper.map(original_message.get());
-            if(original_messageDto.getTags().size() != messageDto.getTags().size() || !original_messageDto.getTags().containsAll(messageDto.getTags()) || !messageDto.getTags().containsAll(original_messageDto.getTags())){
+        if (messageDto.getOriginal_message() != null) {
+            if (messageDto.getTags() == null || messageDto.getTags().isEmpty()) {
                 throw new InvalidTagsException("Message has to have same tags as original message");
+            } else if (!messageDto.getTags().isEmpty()) {
+                Optional<Message> original_message = messageRepository.findById(messageDto.getOriginal_message());
+                MessageDto original_messageDto = messageMapper.map(original_message.get());
+                if (original_messageDto.getTags().size() != messageDto.getTags().size() || !original_messageDto.getTags().containsAll(messageDto.getTags()) || !messageDto.getTags().containsAll(original_messageDto.getTags())) {
+                    throw new InvalidTagsException("Message has to have same tags as original message");
+                }
             }
         }
         if (languageRepository.findByLanguage(messageDto.getLanguage()) == null) {
             Language language = new Language(messageDto.getLanguage());
             Language savedLanguage = languageRepository.save(language);
         }
-        if(messageDto.getTags() != null) {
+        if (messageDto.getTags() != null) {
             for (Optional<String> tagName : messageDto.getTags()) {
                 if (tagRepository.findByTag(tagName.get()) == null) {
                     Tag tag = new Tag(tagName.get());
