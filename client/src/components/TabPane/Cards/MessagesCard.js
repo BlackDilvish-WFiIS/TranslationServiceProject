@@ -26,6 +26,8 @@ const MessagesCard = () => {
   const [originalMessData, setoriginalMessData] = useState();
   const [tagData, setTagData] = useState();
 
+  const [isOriginal, setIsOriginal] = useState();
+
   const success = (message) => {
     messageApi.open({
       type: "success",
@@ -87,6 +89,7 @@ const MessagesCard = () => {
 
   const handleEdit = (record) => {
     setIsEditing(true);
+    setIsOriginal(record.language === 'English');
     setEditingMessage({ ...record });
   };
 
@@ -356,6 +359,7 @@ const MessagesCard = () => {
           value={editingMessage?.language}
           placeholder="Please add language"
           onChange={(e) => {
+            setIsOriginal(e === 'English');
             setEditingMessage((pre) => {
               return { ...pre, language: e };
             });
@@ -376,6 +380,7 @@ const MessagesCard = () => {
             });
           }}
           options={originalMessData}
+          disabled={isOriginal}
         />
         <br/>
 
@@ -426,6 +431,7 @@ const MessagesCard = () => {
           value={addingMessage?.language}
           placeholder="Please add language"
           onChange={(e) => {
+            setIsOriginal(e === 'English');
             setAddingMessage((pre) => {
               return { ...pre, language: e };
             });
@@ -446,9 +452,10 @@ const MessagesCard = () => {
             });
           }}
           options={originalMessData}
+          disabled = {isOriginal}
         />
         <br/>
-
+        
         <Select
           mode="multiple"
           allowClear
