@@ -399,6 +399,7 @@ const MessagesCard = () => {
             });
           }}
           options={tagData}
+          disabled={!isOriginal}
         />
 
         <TextArea
@@ -470,6 +471,7 @@ const MessagesCard = () => {
             });
           }}
           options={tagData}
+          disabled={!isOriginal}
         />
 
         <TextArea
