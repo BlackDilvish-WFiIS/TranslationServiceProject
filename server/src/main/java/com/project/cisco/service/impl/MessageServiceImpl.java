@@ -40,15 +40,9 @@ public class MessageServiceImpl implements MessageService {
                 throw new NotAllowedLanguageException("Original message can be only in english");
             }
             if (messageDto.getOriginal_message() != null) {
-                if (messageDto.getTags() == null || messageDto.getTags().isEmpty()) {
-                    throw new InvalidTagsException("Message has to have same tags as original message");
-                } else if (!messageDto.getTags().isEmpty()) {
-                    Optional<Message> original_message = messageRepository.findById(messageDto.getOriginal_message());
-                    MessageDto original_messageDto = messageMapper.map(original_message.get());
-                    if (original_messageDto.getTags().size() != messageDto.getTags().size() || !original_messageDto.getTags().containsAll(messageDto.getTags()) || !messageDto.getTags().containsAll(original_messageDto.getTags())) {
-                        throw new InvalidTagsException("Message has to have same tags as original message");
-                    }
-                }
+                Optional<Message> original_message = messageRepository.findById(messageDto.getOriginal_message());
+                MessageDto original_messageDto = messageMapper.map(original_message.get());
+                messageDto.setTags(original_messageDto.getTags());
             }
             if (languageRepository.findByLanguage(messageDto.getLanguage()) == null) {
                 Language language = new Language(messageDto.getLanguage());
@@ -106,17 +100,6 @@ public class MessageServiceImpl implements MessageService {
         if (messageDto.getOriginal_message() == null && !Objects.equals(messageDto.getLanguage(), "English")) {
             throw new NotAllowedLanguageException("Original message can be only in english");
         }
-        if (messageDto.getOriginal_message() != null) {
-            if (messageDto.getTags() == null || messageDto.getTags().isEmpty()) {
-                throw new InvalidTagsException("Message has to have same tags as original message");
-            } else if (!messageDto.getTags().isEmpty()) {
-                Optional<Message> original_message = messageRepository.findById(messageDto.getOriginal_message());
-                MessageDto original_messageDto = messageMapper.map(original_message.get());
-                if (original_messageDto.getTags().size() != messageDto.getTags().size() || !original_messageDto.getTags().containsAll(messageDto.getTags()) || !messageDto.getTags().containsAll(original_messageDto.getTags())) {
-                    throw new InvalidTagsException("Message has to have same tags as original message");
-                }
-            }
-        }
         if (languageRepository.findByLanguage(messageDto.getLanguage()) == null) {
             Language language = new Language(messageDto.getLanguage());
             Language savedLanguage = languageRepository.save(language);
@@ -134,6 +117,14 @@ public class MessageServiceImpl implements MessageService {
         message.setOriginal_message(tempMessage.getOriginal_message());
         message.setLanguage(tempMessage.getLanguage());
         message.setContent(tempMessage.getContent());
+        if (messageDto.getOriginal_message() == null) {
+            Optional<Message> original_message = messageRepository.findById(messageDto.getId());
+            original_message.get().getMessage()
+                    .forEach(messageChild -> {
+                        messageChild.setTags(tempMessage.getTags());
+                        messageRepository.save(messageChild);
+                    });
+        }
         message.setTags(tempMessage.getTags());
         Message modifiedMessage = messageRepository.save(message);
         return messageMapper.map(modifiedMessage);
