@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { PlusOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
-import { Button, Row, Modal, Input, message, Select  } from "antd";
+import { Button, Row, Modal, Input, message, Select } from "antd";
 import { Table } from "ant-table-extensions";
 import { baseURL } from "../../../config";
+import Tag from "../../Tag/Tag";
 
 const { TextArea } = Input;
 
@@ -63,20 +64,13 @@ const MessagesCard = () => {
       .then((response) => response.json())
       .then((data) => {
         data.forEach((d) => {
-          const orig = data.find(e => e.id === d.original_message);
-          if (orig)
-          {
-            d['original_message_text'] = orig.content;
+          const orig = data.find((e) => e.id === d.original_message);
+          if (orig) {
+            d["original_message_text"] = orig.content;
+          } else {
+            d["original_message_text"] = "";
           }
-          else
-          {
-            d['original_message_text'] = "";
-          }
-          let tags_str = '';
-          d.tags.forEach((t) => {
-            tags_str += '[' + t + '] ';
-          });
-          d['tags_text'] = tags_str;
+          d["tags_text"] = d.tags;
         });
         setData(data);
         getOriginalMessages(data);
@@ -89,17 +83,17 @@ const MessagesCard = () => {
 
   const handleEdit = (record) => {
     setIsEditing(true);
-    setIsOriginal(record.language === 'English');
+    setIsOriginal(record.language === "English");
     setEditingMessage({ ...record });
   };
 
   const handleDelete = (record) => {
     let tit;
     if (record.original_message == null) {
-      tit = "Are you sure, you want to delete this message? All messages related to this original message will be deleted"
-    }
-    else {
-      tit = "Are you sure, you want to delete this message?"
+      tit =
+        "Are you sure, you want to delete this message? All messages related to this original message will be deleted";
+    } else {
+      tit = "Are you sure, you want to delete this message?";
     }
     Modal.confirm({
       title: tit,
@@ -159,7 +153,8 @@ const MessagesCard = () => {
       title: "Original message",
       dataIndex: "original_message_text",
       sorter: {
-        compare: (a, b) => a.original_message_text.localeCompare(b.original_message_text),
+        compare: (a, b) =>
+          a.original_message_text.localeCompare(b.original_message_text),
       },
       editable: true,
     },
@@ -167,6 +162,16 @@ const MessagesCard = () => {
       title: "Tags",
       dataIndex: "tags_text",
       editable: true,
+
+      render: (tags) => {
+        return (
+          <>
+            {tags.map((tag, index) => (
+              <Tag text={tag} key={index} index={index} />
+            ))}
+          </>
+        );
+      },
     },
     {
       title: "Operations",
@@ -271,8 +276,8 @@ const MessagesCard = () => {
       .then((response) => response.json())
       .then((data) => {
         data.forEach((d) => {
-          d['label'] = d['language'];
-          d['value'] = d['language'];
+          d["label"] = d["language"];
+          d["value"] = d["language"];
         });
         setLangData(data);
       })
@@ -282,32 +287,31 @@ const MessagesCard = () => {
   };
 
   const getOriginalMessages = (data) => {
-    let originals = []
+    let originals = [];
     data.forEach((d) => {
-      if (d['original_message'] == null)
-      {
-        let newData = { 'label': d['content'], 'value': d['id']};
+      if (d["original_message"] == null) {
+        let newData = { label: d["content"], value: d["id"] };
         originals.push(newData);
       }
     });
-    originals.push({ 'label': 'None', 'value': null});
+    originals.push({ label: "None", value: null });
     setoriginalMessData(originals);
-  }
+  };
 
   const fetchTags = () => {
     fetch(`${baseURL}/tag`)
       .then((response) => response.json())
       .then((data) => {
         data.forEach((d) => {
-          d['label'] = d['tag'];
-          d['value'] = d['tag'];
+          d["label"] = d["tag"];
+          d["value"] = d["tag"];
         });
         setTagData(data);
       })
       .catch((error) => {
         console.error("Error while fetching tags: ", error);
       });
-  }
+  };
 
   return (
     <>
@@ -351,26 +355,26 @@ const MessagesCard = () => {
         }}
         onOk={saveEdited}
       >
-        
         <Select
           style={{
-            width: '100%',
+            width: "100%",
+            marginBottom: "5px",
           }}
           value={editingMessage?.language}
           placeholder="Please add language"
           onChange={(e) => {
-            setIsOriginal(e === 'English');
+            setIsOriginal(e === "English");
             setEditingMessage((pre) => {
               return { ...pre, language: e };
             });
           }}
           options={langData}
         />
-        <br/>
 
         <Select
           style={{
-            width: '100%',
+            width: "100%",
+            marginBottom: "5px",
           }}
           value={editingMessage?.original_message}
           placeholder="Please add original message"
@@ -382,13 +386,13 @@ const MessagesCard = () => {
           options={originalMessData}
           disabled={isOriginal}
         />
-        <br/>
 
         <Select
           mode="multiple"
           allowClear
           style={{
-            width: '100%',
+            width: "100%",
+            marginBottom: "10px",
           }}
           value={editingMessage?.tags}
           placeholder="Please select tags"
@@ -411,7 +415,7 @@ const MessagesCard = () => {
             });
           }}
           showCount
-          style={{ height: 120, resize: 'none' }}
+          style={{ height: 120, resize: "none" }}
         ></TextArea>
       </Modal>
 
@@ -424,26 +428,26 @@ const MessagesCard = () => {
         }}
         onOk={saveNewMessage}
       >
-
         <Select
           style={{
-            width: '100%',
+            width: "100%",
+            marginBottom: "5px",
           }}
           value={addingMessage?.language}
           placeholder="Please add language"
           onChange={(e) => {
-            setIsOriginal(e === 'English');
+            setIsOriginal(e === "English");
             setAddingMessage((pre) => {
               return { ...pre, language: e };
             });
           }}
           options={langData}
         />
-        <br/>
 
         <Select
           style={{
-            width: '100%',
+            width: "100%",
+            marginBottom: "5px",
           }}
           value={addingMessage?.original_message}
           placeholder="Please add original message"
@@ -453,15 +457,15 @@ const MessagesCard = () => {
             });
           }}
           options={originalMessData}
-          disabled = {isOriginal}
+          disabled={isOriginal}
         />
-        <br/>
-        
+
         <Select
           mode="multiple"
           allowClear
           style={{
-            width: '100%',
+            width: "100%",
+            marginBottom: "10px",
           }}
           value={addingMessage?.tags}
           placeholder="Please select tags"
@@ -483,7 +487,7 @@ const MessagesCard = () => {
             });
           }}
           showCount
-          style={{ height: 120, resize: 'none' }}
+          style={{ height: 120, resize: "none" }}
         ></TextArea>
       </Modal>
     </>

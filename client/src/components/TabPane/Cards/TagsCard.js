@@ -3,6 +3,7 @@ import { PlusOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { Button, Row, Modal, Input, message } from "antd";
 import { Table } from "ant-table-extensions";
 import { baseURL } from "../../../config";
+import Tag from "../../Tag/Tag";
 
 const TagsCard = () => {
   const [data, setData] = useState();
@@ -48,6 +49,9 @@ const TagsCard = () => {
       dataIndex: "tag",
       sorter: {
         compare: (a, b) => a.tag.localeCompare(b.tag),
+      },
+      render: (record) => {
+        return <Tag text={record} />;
       },
       editable: true,
     },
