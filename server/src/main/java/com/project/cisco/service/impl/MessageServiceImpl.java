@@ -7,10 +7,7 @@ import com.project.cisco.database.repository.LanguageRepository;
 import com.project.cisco.database.repository.MessageRepository;
 import com.project.cisco.database.repository.TagRepository;
 import com.project.cisco.dto.MessageDto;
-import com.project.cisco.exception.InvalidTagsException;
-import com.project.cisco.exception.NotAllowedLanguageException;
-import com.project.cisco.exception.NotFoundException;
-import com.project.cisco.exception.UniqueConstraintViolationException;
+import com.project.cisco.exception.*;
 import com.project.cisco.mapper.MessageMapper;
 import com.project.cisco.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +35,9 @@ public class MessageServiceImpl implements MessageService {
         try {
             if (messageDto.getOriginal_message() == null && !Objects.equals(messageDto.getLanguage(), "English")) {
                 throw new NotAllowedLanguageException("Original message can be only in english");
+            }
+            if (messageDto.getContent() == null) {
+                throw new EmptyContentException("Content cannot be empty");
             }
             if (messageDto.getOriginal_message() != null) {
                 Optional<Message> original_message = messageRepository.findById(messageDto.getOriginal_message());

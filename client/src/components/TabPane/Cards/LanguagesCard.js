@@ -1,8 +1,3 @@
-import React from "react";
-
-const LanguagesCard = () => {
-  return <p>Languages tab TODO</p>;
-
 import React, { useState, useEffect } from "react";
 import { PlusOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { Button, Row, Modal, Input, message } from "antd";

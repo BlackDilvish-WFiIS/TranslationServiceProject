@@ -5,6 +5,7 @@ import com.project.cisco.database.repository.LanguageRepository;
 import com.project.cisco.database.repository.MessageRepository;
 import com.project.cisco.dto.LanguageDto;
 import com.project.cisco.exception.LengthConstraintViolationException;
+import com.project.cisco.exception.NotAllowedLanguageException;
 import com.project.cisco.exception.NotFoundException;
 import com.project.cisco.exception.UniqueConstraintViolationException;
 import com.project.cisco.mapper.LanguageMapper;
@@ -59,6 +60,9 @@ public class LanguageServiceImpl implements LanguageService {
         Optional<Language> languageOptional = languageRepository.findById(id);
         if (languageOptional.isEmpty()) {
             throw new NotFoundException("Language with given id does not exist");
+        }
+        if(languageOptional.get().getLanguage().equalsIgnoreCase("English")){
+            throw new NotAllowedLanguageException("It is not allowed to delete English language from database");
         }
         messageRepository.findAll().forEach(message -> {
             if (message.getLanguage().getLanguage().equals(languageOptional.get().getLanguage())) {

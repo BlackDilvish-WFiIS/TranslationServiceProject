@@ -51,6 +51,11 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(buildErrorMessage(ex), HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler({EmptyContentException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ErrorDto> handleEmptyContentException(EmptyContentException ex) {
+        return new ResponseEntity<>(buildErrorMessage(ex), HttpStatus.BAD_REQUEST);
+    }
 
     private ErrorDto buildErrorMessage(GeneralException ex){
         return ErrorDto.builder().errorCode(ex.getErrorCode()).message(ex.getMessage()).build();

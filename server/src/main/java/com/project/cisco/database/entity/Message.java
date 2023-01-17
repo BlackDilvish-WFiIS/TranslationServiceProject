@@ -1,10 +1,7 @@
 package com.project.cisco.database.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import lombok.experimental.FieldNameConstants;
 
 import java.util.List;
@@ -34,7 +31,7 @@ public class Message {
     @JoinColumn(name="language_id")
     private Language language;
 
-    @Column
+    @Column(nullable = false)
     private String content;
 
     @ManyToMany(cascade = CascadeType.DETACH)
