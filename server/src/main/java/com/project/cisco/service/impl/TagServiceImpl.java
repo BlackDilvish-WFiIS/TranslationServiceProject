@@ -1,8 +1,10 @@
 package com.project.cisco.service.impl;
 
 import com.project.cisco.database.entity.Tag;
+import com.project.cisco.database.repository.MessageRepository;
 import com.project.cisco.database.repository.TagRepository;
 import com.project.cisco.dto.TagDto;
+import com.project.cisco.exception.LengthConstraintViolationException;
 import com.project.cisco.exception.NotFoundException;
 import com.project.cisco.exception.UniqueConstraintViolationException;
 import com.project.cisco.exception.LengthConstraintViolationException;
@@ -16,11 +18,14 @@ import org.springframework.transaction.TransactionSystemException;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class TagServiceImpl implements TagService {
     @Autowired
     private TagRepository tagRepository;
+    @Autowired
+    private MessageRepository messageRepository;
     @Autowired
     private TagMapper tagMapper;
 
@@ -58,6 +63,16 @@ public class TagServiceImpl implements TagService {
         if (tagOptional.isEmpty()) {
             throw new NotFoundException("Tag with given id does not exist!");
         }
+        tagOptional.get().getMessages()
+                        .forEach(message -> {
+                            List<Tag> updatedTags = message.getTags()
+                                    .stream()
+                                    .filter(tag -> !tag.equals(tagOptional.get()))
+                                    .collect(Collectors.toList());
+                            message.setTags(updatedTags);
+                            messageRepository.save(message);
+                        });
+        tagOptional.get().setMessages(null);
         tagRepository.deleteById(id);
     }
 

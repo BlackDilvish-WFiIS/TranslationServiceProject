@@ -4,16 +4,10 @@ import com.project.cisco.CiscoApplication;
 import com.project.cisco.database.entity.Language;
 import com.project.cisco.dto.LanguageDto;
 import com.project.cisco.mapper.LanguageMapper;
-import jakarta.inject.Inject;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.util.Assert;
-
-import java.util.List;
 
 @SpringBootTest(classes = CiscoApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class LanguageMapperTest {

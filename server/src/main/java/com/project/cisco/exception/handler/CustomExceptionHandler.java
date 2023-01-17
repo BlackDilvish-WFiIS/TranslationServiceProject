@@ -1,6 +1,8 @@
 package com.project.cisco.exception.handler;
 
+import com.project.cisco.exception.*;
 import com.project.cisco.exception.GeneralException;
+import com.project.cisco.exception.NotAllowedLanguageException;
 import com.project.cisco.exception.NotFoundException;
 import com.project.cisco.exception.UniqueConstraintViolationException;
 import com.project.cisco.exception.LengthConstraintViolationException;
@@ -28,6 +30,30 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler({LengthConstraintViolationException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ErrorDto> handleLengthConstraintViolationException(LengthConstraintViolationException ex) {
+        return new ResponseEntity<>(buildErrorMessage(ex), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({NotAllowedLanguageException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ErrorDto> handleNotAllowedLanguageException(NotAllowedLanguageException ex) {
+        return new ResponseEntity<>(buildErrorMessage(ex), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({InvalidTagsException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ErrorDto> handleInvalidTagsException(InvalidTagsException ex) {
+        return new ResponseEntity<>(buildErrorMessage(ex), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({NotAllowedOriginalMessageException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ErrorDto> handleNotAllowedOriginalMessageException(NotAllowedOriginalMessageException ex) {
+        return new ResponseEntity<>(buildErrorMessage(ex), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({EmptyContentException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ErrorDto> handleEmptyContentException(EmptyContentException ex) {
         return new ResponseEntity<>(buildErrorMessage(ex), HttpStatus.BAD_REQUEST);
     }
 
