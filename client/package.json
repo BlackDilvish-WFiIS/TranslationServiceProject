@@ -7,7 +7,7 @@
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^14.4.3",
     "ant-table-extensions": "^1.1.7",
-    "antd": "^5.1.2",
+    "antd": "^4.24.7",
     "axios": "^1.2.1",
     "hex-rgb": "^5.0.0",
     "install": "^0.13.0",
